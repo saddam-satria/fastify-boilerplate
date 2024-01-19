@@ -1,0 +1,43 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Author {
+  authorId  String   @id
+  name      String   @db.VarChar(255)
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+  Post      Post[]
+}
+
+model Category {
+  categoryId     String           @id
+  name           String           @unique @db.VarChar(255)
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime
+  PostOnCategory PostOnCategory[]
+}
+
+model Post {
+  postId         String           @id
+  title          String           @db.VarChar(255)
+  body           String
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime
+  author_id      String
+  Author         Author           @relation(fields: [author_id], references: [authorId])
+  PostOnCategory PostOnCategory[]
+}
+
+model PostOnCategory {
+  postOnCategoryId String   @id
+  category_id      String
+  post_id          String
+  Category         Category @relation(fields: [category_id], references: [categoryId])
+  Post             Post     @relation(fields: [post_id], references: [postId])
+}
